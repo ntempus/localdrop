@@ -82,6 +82,7 @@ Goals:
 | **State Management** | React `useState` / `useReducer`                | Keep state local to the converter component.        |
 
 ---
+- **Analytics Constraint**: Do NOT install Google Analytics, Vercel Analytics, or any client-side tracking scripts. The app must remain 100% "Zero-Request" compliant to maintain user trust.
 
 ## 5. Folder Structure
 
@@ -189,3 +190,4 @@ Performance over Pretty — The conversion speed is the primary metric.
 Simplicity — One button, one result. No "Advanced Settings" dropdowns for the MVP.
 
 Zero Cost — Use libraries and hosting that fit within free tiers (Vercel Hobby, GitHub Pages).
+
