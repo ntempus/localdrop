@@ -50,6 +50,4 @@ LocalDrop is a secure, efficient tool for converting HEIC images to standard for
 
 4.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## contributing
 
-Contributions are welcome! Please run `npm run lint` before submitting a pull request.
