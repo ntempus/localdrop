@@ -38,8 +38,8 @@ next-env.d.ts
 
 
 # AI / Editor
-.cursor/
-.kiro/
-.gemini/
-.agent/
-.reviews/
+.cursor
+.kiro
+.gemini
+.agent
+.reviews
