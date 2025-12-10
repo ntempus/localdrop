@@ -47,22 +47,12 @@ function DropZone({ onFileSelect, disabled, status }: DropZoneProps) {
     setIsDragging(false)
 
     if (disabled) {
-      console.log('[DropZone.handleDrop] Drop ignored - component is disabled');
       return;
     }
 
     const files = Array.from(e.dataTransfer.files)
-    console.log('[DropZone.handleDrop] 📥 Files dropped:', {
-      count: files.length,
-      files: files.map(f => ({
-        name: f.name,
-        size: f.size,
-        type: f.type,
-      })),
-    });
 
     if (files.length > 0) {
-      console.log('[DropZone.handleDrop] Calling onFileSelect with', files.length, 'files');
       onFileSelect(files)
     }
   }, [disabled, onFileSelect])
@@ -83,17 +73,7 @@ function DropZone({ onFileSelect, disabled, status }: DropZoneProps) {
     const fileList = e.target.files
     const files = fileList ? Array.from(fileList) : []
 
-    console.log('[DropZone.handleFileChange] 📂 File input changed:', {
-      filesCount: files.length,
-      files: files.map(f => ({
-        name: f.name,
-        size: f.size,
-        type: f.type,
-      })),
-    });
-
     if (files.length > 0) {
-      console.log('[DropZone.handleFileChange] Calling onFileSelect with', files.length, 'files');
       onFileSelect(files)
       // Reset input value to allow selecting the same files again
       if (fileInputRef.current) {

@@ -34,34 +34,10 @@ export default function Converter() {
    * 
    * @param file - The validated HEIC file to convert
    */
-  /**
-   * Process a single file conversion from HEIC to JPEG
-   * 
-   * @param fileId - The ID of the file item to process
-   */
-  const processFileItem = useCallback(async (fileId: string) => {
-    setState(prev => ({
-      ...prev,
-      files: prev.files.map(f =>
-        f.id === fileId ? { ...f, status: 'processing' } : f
-      )
-    }))
 
-    // Get the file object from current state (or we could pass it, but state is safer)
-    // We need to access the latest state, so we use the functional update to get the item
-    // But we can't access it inside the functional update for the async call.
-    // So we find it from the state *before* the update or just pass the file object if we have it?
-    // Better to find it in the current state `state.files` but `state` might be stale in closure?
-    // Actually, we can get the file from the state variable if `processFileItem` is called after state update.
-    // However, to be safe and avoid closure staleness issues, let's look it up from the previous state in the setstate, 
-    // OR, better, pass the file object as argument too.
-
-    // Let's refine: We will pass `file` and `id`.
-  }, [])
 
   // Re-implementing processFileItem properly
   const processFile = useCallback(async (fileItem: FileItem, format: OutputFormat) => {
-    console.log('[Converter.processFile] 🎯 Starting file processing for:', fileItem.file.name, 'Format:', format);
 
     const startTime = performance.now()
 
@@ -125,8 +101,6 @@ export default function Converter() {
    * Handle file selection from DropZone
    */
   const handleFileSelect = useCallback(async (selectedFiles: File[]) => {
-    console.log(`[Converter.handleFileSelect] Selected ${selectedFiles.length} files`);
-
     const newFileItems: FileItem[] = selectedFiles.map(file => {
       const validation = validateFile(file)
       return {
@@ -165,8 +139,6 @@ export default function Converter() {
         .slice(0, availableSlots)
 
       if (nextFiles.length > 0) {
-        console.log(`[Queue] Starting ${nextFiles.length} new conversions. Active: ${processingCount}`);
-
         // 1. Mark them as processing in state
         setState(prev => ({
           ...prev,
@@ -217,7 +189,6 @@ export default function Converter() {
 
     try {
       setIsZipping(true)
-      console.log('[handleDownloadAll] Starting ZIP generation for', successfulFiles.length, 'files');
 
       // Dynamic import JSZip
       const JSZip = (await import('jszip')).default
@@ -238,7 +209,6 @@ export default function Converter() {
       await Promise.all(processingPromises)
 
       // Generate zip file
-      console.log('[handleDownloadAll] Generating ZIP blob...');
       const zipBlob = await zip.generateAsync({ type: 'blob' })
 
       // Trigger download

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Lock } from "lucide-react";
+import { EarthLock } from "lucide-react";
 import Converter from "@/components/Converter";
 
 export const metadata: Metadata = {
@@ -18,7 +18,7 @@ export default function Home() {
             <header className="flex items-center justify-between whitespace-nowrap px-4 md:px-6 py-4">
               <div className="flex items-center gap-3 text-text-primary-dark">
                 <div className="text-text-primary-dark">
-                  <Lock className="w-6 h-6" />
+                  <EarthLock className="w-6 h-6" />
                 </div>
                 <h2 className="text-base font-semibold leading-tight">LocalDrop</h2>
               </div>

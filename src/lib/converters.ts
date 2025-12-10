@@ -132,21 +132,13 @@ export interface ConversionResult {
  */
 async function isValidHeicFile(file: File): Promise<boolean> {
   try {
-    console.log('[isValidHeicFile] Starting file validation for:', file.name);
-
     // Read the first 12 bytes of the file
     const buffer = await file.slice(0, 12).arrayBuffer();
     const bytes = new Uint8Array(buffer);
 
-    console.log('[isValidHeicFile] First 12 bytes (hex):',
-      Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ')
-    );
-    console.log('[isValidHeicFile] First 12 bytes (decimal):', Array.from(bytes).join(' '));
-
     // Check for ftyp box at offset 4 (HEIC/HEIF files are ISO Base Media Format)
     // Bytes 4-7 should be "ftyp"
     const ftypSignature = String.fromCharCode(bytes[4], bytes[5], bytes[6], bytes[7]);
-    console.log('[isValidHeicFile] ftyp signature at offset 4-7:', ftypSignature);
 
     if (ftypSignature !== 'ftyp') {
       console.warn('[isValidHeicFile] ❌ File does not have ftyp signature at offset 4. Found:', ftypSignature);
@@ -157,10 +149,6 @@ async function isValidHeicFile(file: File): Promise<boolean> {
     // Common brands: heic, heix, hevc, hevx, heim, heis, hevm, hevs, mif1, msf1
     const brandSignature = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
     const validBrands = ['heic', 'heix', 'hevc', 'hevx', 'heim', 'heis', 'hevm', 'hevs', 'mif1', 'msf1'];
-
-    console.log('[isValidHeicFile] Brand signature at offset 8-11:', brandSignature);
-    console.log('[isValidHeicFile] Valid brands:', validBrands);
-    console.log('[isValidHeicFile] Is brand valid?', validBrands.includes(brandSignature));
 
     return validBrands.includes(brandSignature);
   } catch (error) {
@@ -196,38 +184,21 @@ async function isValidHeicFile(file: File): Promise<boolean> {
  * }
  */
 export async function convertFile(file: File, outputFormat: OutputFormat = CONVERSION_CONFIG.toType as OutputFormat): Promise<ConversionResult> {
-  console.log('\n========================================');
-  console.log('[convertFile] 🔄 STARTING CONVERSION');
-  console.log('========================================');
-
   try {
-    // Log file details for debugging
-    console.log('[convertFile] 📁 File details:', {
-      name: file.name,
-      size: `${file.size} bytes (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
-      type: file.type || '(no MIME type)',
-      lastModified: new Date(file.lastModified).toISOString(),
-    });
-
     // Validate file structure before attempting conversion
-    console.log('[convertFile] 🔍 Validating file structure...');
     const isValid = await isValidHeicFile(file);
 
     if (!isValid) {
-      console.error('[convertFile] ❌ File does not appear to be a valid HEIC/HEIF file');
-      console.log('========================================\n');
+      console.error('[convertFile] File does not appear to be a valid HEIC/HEIF file');
       return {
         success: false,
         error: ERROR_MESSAGES.CONVERSION_FAILED,
       };
     }
 
-    console.log('[convertFile] ✅ File structure validation passed');
-
     // Dynamic import for SSR safety (Next.js 15 App Router requirement)
     // This ensures heic2any is only loaded on the client side
     // Using a more robust import strategy with error handling and retry logic
-    console.log('[convertFile] 📦 Loading heic2any library...');
 
     let heic2anyModule;
     let heic2any;
@@ -237,21 +208,11 @@ export async function convertFile(file: File, outputFormat: OutputFormat = CONVE
       heic2anyModule = await import('heic2any');
       heic2any = heic2anyModule.default || heic2anyModule;
 
-      console.log('[convertFile] heic2any module loaded:', {
-        isFunction: typeof heic2any === 'function',
-        moduleKeys: Object.keys(heic2anyModule),
-        type: typeof heic2any,
-        hasDefault: 'default' in heic2anyModule,
-      });
     } catch (importError) {
-      console.error('[convertFile] ❌ Failed to import heic2any:', importError);
-
       // Try alternative import path
       try {
-        console.log('[convertFile] 🔄 Retrying with alternative import...');
         heic2anyModule = await import('heic2any/dist/heic2any.js');
         heic2any = heic2anyModule.default || heic2anyModule;
-        console.log('[convertFile] ✅ Alternative import succeeded');
       } catch (retryError) {
         console.error('[convertFile] ❌ Alternative import also failed:', retryError);
         throw new Error(`Failed to load heic2any library: ${importError instanceof Error ? importError.message : String(importError)}`);
@@ -276,18 +237,7 @@ export async function convertFile(file: File, outputFormat: OutputFormat = CONVE
       type: 'image/heic'
     });
 
-    console.log('[convertFile] 🔄 Created blob for conversion:', {
-      size: blobWithCorrectType.size,
-      type: blobWithCorrectType.type,
-      originalType: file.type,
-    });
 
-    console.log('[convertFile] ⚙️ Conversion config:', {
-      toType: outputFormat,
-      quality: CONVERSION_CONFIG.quality,
-    });
-
-    console.log('[convertFile] 🚀 Calling heic2any...');
 
     // Convert HEIC to JPEG using CONVERSION_CONFIG
     // heic2any may return a Blob or array of Blobs (for multi-image HEIC files)
@@ -298,36 +248,18 @@ export async function convertFile(file: File, outputFormat: OutputFormat = CONVE
       quality: CONVERSION_CONFIG.quality,
     });
 
-    console.log('[convertFile] 📊 heic2any returned:', {
-      isArray: Array.isArray(result),
-      type: Array.isArray(result) ? 'array' : typeof result,
-      length: Array.isArray(result) ? result.length : 'N/A',
-    });
+
 
     // Handle result - heic2any returns Blob or Blob[]
     const convertedBlob = Array.isArray(result) ? result[0] : result;
 
     if (!convertedBlob || !((convertedBlob as any) instanceof Blob)) {
-      console.error('[convertFile] ❌ Invalid conversion result:', {
-        convertedBlob,
-        type: typeof convertedBlob,
-        isBlob: convertedBlob instanceof Blob,
-      });
-      console.log('========================================\n');
+      console.error('[convertFile] Invalid conversion result');
       return {
         success: false,
         error: ERROR_MESSAGES.CONVERSION_FAILED,
       };
     }
-
-    console.log('[convertFile] ✅ Conversion successful!', {
-      originalSize: `${file.size} bytes`,
-      convertedSize: `${convertedBlob.size} bytes`,
-      compression: `${((1 - convertedBlob.size / file.size) * 100).toFixed(1)}%`,
-      type: convertedBlob.type,
-    });
-
-    console.log('========================================\n');
 
     return {
       success: true,
