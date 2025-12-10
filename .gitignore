@@ -36,3 +36,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+
+# AI / Editor
+.cursor/
+.kiro/
+.gemini/
+.agent/
+.reviews/
