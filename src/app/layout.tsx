@@ -10,11 +10,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://localdrop.jaid.dev'),
-  title: 'LocalDrop | Private HEIC to JPG Converter',
-  description: 'LocalDrop is the fastest, most secure way to convert HEIC photos to JPG directly in your browser. No server uploads, offline capable, and 100% private. Free forever.',
+  title: 'LocalDrop | Secure, Free & Private HEIC to JPG Converter',
+  description: 'The fastest way to convert HEIC to JPG in your browser. No server uploads, offline capable, and 100% private. Convert for Free.',
   openGraph: {
-    title: 'LocalDrop | Private HEIC to JPG Converter',
-    description: 'LocalDrop is the fastest, most secure way to convert HEIC photos to JPG directly in your browser. No server uploads, offline capable, and 100% private. Free forever.',
+    title: 'LocalDrop | Secure, Free & Private HEIC to JPG Converter',
+    description: 'The fastest way to convert HEIC to JPG in your browser. No server uploads, offline capable, and 100% private. Convert for Free.',
     url: 'https://localdrop.jaid.dev',
     siteName: 'LocalDrop',
     images: [
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LocalDrop | Private HEIC to JPG Converter',
-    description: 'LocalDrop is the fastest, most secure way to convert HEIC photos to JPG directly in your browser. No server uploads, offline capable, and 100% private. Free forever.',
+    title: 'LocalDrop | Secure, Free & Private HEIC to JPG Converter',
+    description: 'The fastest way to convert HEIC to JPG in your browser. No server uploads, offline capable, and 100% private. Convert for Free.',
     images: ['/og-image.png'],
   },
 };
