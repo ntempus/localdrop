@@ -26,6 +26,12 @@ export const CONVERSION_CONFIG = {
 } as const;
 
 /**
+ * Maximum number of concurrent file conversions
+ * To prevent browser freezing and memory issues
+ */
+export const MAX_CONCURRENT_CONVERSIONS = 3;
+
+/**
  * Error messages for user feedback
  * Matches requirements from requirements.md (Requirement 4.2, 4.3)
  */

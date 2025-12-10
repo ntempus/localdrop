@@ -6,7 +6,7 @@
  */
 
 import { FILE_CONSTRAINTS, ERROR_MESSAGES, CONVERSION_CONFIG } from './constants';
-import type { FileValidationResult } from './types';
+import type { FileValidationResult, OutputFormat } from './types';
 
 /**
  * Validates a file before conversion processing
@@ -181,10 +181,11 @@ async function isValidHeicFile(file: File): Promise<boolean> {
  * The conversion is performed entirely client-side with no network requests.
  * 
  * Configuration:
- * - Output format: JPEG (image/jpeg)
+ * - Output format: JPEG (image/jpeg) or PNG (image/png)
  * - Quality: 0.8 (80%) for optimal speed-quality balance
  * 
  * @param file - The HEIC file to convert
+ * @param outputFormat - The desired output format (default: image/jpeg)
  * @returns Promise<ConversionResult> with success flag, blob, or error message
  * 
  * @example
@@ -194,7 +195,7 @@ async function isValidHeicFile(file: File): Promise<boolean> {
  *   // Use the blob URL for download
  * }
  */
-export async function convertFile(file: File): Promise<ConversionResult> {
+export async function convertFile(file: File, outputFormat: OutputFormat = CONVERSION_CONFIG.toType as OutputFormat): Promise<ConversionResult> {
   console.log('\n========================================');
   console.log('[convertFile] 🔄 STARTING CONVERSION');
   console.log('========================================');
@@ -282,7 +283,7 @@ export async function convertFile(file: File): Promise<ConversionResult> {
     });
 
     console.log('[convertFile] ⚙️ Conversion config:', {
-      toType: CONVERSION_CONFIG.toType,
+      toType: outputFormat,
       quality: CONVERSION_CONFIG.quality,
     });
 
@@ -293,7 +294,7 @@ export async function convertFile(file: File): Promise<ConversionResult> {
     // We use the first result if it's an array
     const result = await heic2any({
       blob: blobWithCorrectType,
-      toType: CONVERSION_CONFIG.toType,
+      toType: outputFormat,
       quality: CONVERSION_CONFIG.quality,
     });
 
@@ -306,7 +307,7 @@ export async function convertFile(file: File): Promise<ConversionResult> {
     // Handle result - heic2any returns Blob or Blob[]
     const convertedBlob = Array.isArray(result) ? result[0] : result;
 
-    if (!convertedBlob || !(convertedBlob instanceof Blob)) {
+    if (!convertedBlob || !((convertedBlob as any) instanceof Blob)) {
       console.error('[convertFile] ❌ Invalid conversion result:', {
         convertedBlob,
         type: typeof convertedBlob,

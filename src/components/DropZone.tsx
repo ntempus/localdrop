@@ -39,7 +39,7 @@ function DropZone({ onFileSelect, disabled, status }: DropZoneProps) {
   }, [])
 
   /**
-   * Handle drop event - extract file and call onFileSelect
+   * Handle drop event - extract files and call onFileSelect
    */
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -51,20 +51,19 @@ function DropZone({ onFileSelect, disabled, status }: DropZoneProps) {
       return;
     }
 
-    const files = e.dataTransfer.files
+    const files = Array.from(e.dataTransfer.files)
     console.log('[DropZone.handleDrop] 📥 Files dropped:', {
       count: files.length,
-      files: Array.from(files).map(f => ({
+      files: files.map(f => ({
         name: f.name,
         size: f.size,
         type: f.type,
       })),
     });
-    
+
     if (files.length > 0) {
-      const file = files[0]
-      console.log('[DropZone.handleDrop] Calling onFileSelect with:', file.name);
-      onFileSelect(file)
+      console.log('[DropZone.handleDrop] Calling onFileSelect with', files.length, 'files');
+      onFileSelect(files)
     }
   }, [disabled, onFileSelect])
 
@@ -78,24 +77,25 @@ function DropZone({ onFileSelect, disabled, status }: DropZoneProps) {
   }, [disabled])
 
   /**
-   * Handle file input change - extract file and call onFileSelect
+   * Handle file input change - extract files and call onFileSelect
    */
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
+    const fileList = e.target.files
+    const files = fileList ? Array.from(fileList) : []
+
     console.log('[DropZone.handleFileChange] 📂 File input changed:', {
-      filesCount: files?.length || 0,
-      files: files ? Array.from(files).map(f => ({
+      filesCount: files.length,
+      files: files.map(f => ({
         name: f.name,
         size: f.size,
         type: f.type,
-      })) : [],
+      })),
     });
-    
-    if (files && files.length > 0) {
-      const file = files[0]
-      console.log('[DropZone.handleFileChange] Calling onFileSelect with:', file.name);
-      onFileSelect(file)
-      // Reset input value to allow selecting the same file again
+
+    if (files.length > 0) {
+      console.log('[DropZone.handleFileChange] Calling onFileSelect with', files.length, 'files');
+      onFileSelect(files)
+      // Reset input value to allow selecting the same files again
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
@@ -166,7 +166,7 @@ function DropZone({ onFileSelect, disabled, status }: DropZoneProps) {
           <div className="relative z-10 flex flex-col items-center gap-6">
             {/* Icon container */}
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-border-dark">
-              <Upload 
+              <Upload
                 className={cn(
                   'w-7 h-7',
                   'text-text-primary-dark',
@@ -174,7 +174,7 @@ function DropZone({ onFileSelect, disabled, status }: DropZoneProps) {
                   isDragging && 'scale-110',
                   status === 'processing' && 'text-text-secondary-dark',
                   status === 'success' && 'text-primary'
-                )} 
+                )}
                 aria-hidden="true"
               />
             </div>
@@ -189,13 +189,13 @@ function DropZone({ onFileSelect, disabled, status }: DropZoneProps) {
                 'transition-colors duration-75',
                 status === 'success' && 'text-primary'
               )}>
-                {isDragging 
-                  ? 'Drop your HEIC file here' 
+                {isDragging
+                  ? 'Drop your HEIC file here'
                   : status === 'processing'
-                  ? 'Processing your file...'
-                  : status === 'success'
-                  ? 'Conversion complete!'
-                  : 'Drag and drop files here'}
+                    ? 'Processing your files...'
+                    : status === 'success'
+                      ? 'Conversion complete!'
+                      : 'Drag and drop files here'}
               </p>
               {(status === 'idle' || status === 'error') && (
                 <p className="text-sm font-normal leading-normal text-text-secondary-dark">
@@ -237,6 +237,7 @@ function DropZone({ onFileSelect, disabled, status }: DropZoneProps) {
         accept=".heic,.HEIC"
         onChange={handleFileChange}
         disabled={disabled}
+        multiple
         className="hidden"
         aria-label="HEIC file input"
       />

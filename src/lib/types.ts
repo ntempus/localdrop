@@ -10,12 +10,15 @@
  */
 export type Status = 'idle' | 'processing' | 'success' | 'error';
 
+export type OutputFormat = 'image/jpeg' | 'image/png';
+
 /**
  * Converter state interface for React state management
  * Tracks the current file, conversion status, errors, and download URL
  */
-export interface ConverterState {
-  file: File | null;
+export interface FileItem {
+  id: string;
+  file: File;
   status: Status;
   errorMessage: string;
   downloadUrl: string;
@@ -23,12 +26,22 @@ export interface ConverterState {
 }
 
 /**
+ * Converter state interface for React state management
+ * Tracks the list of files and their individual states
+ */
+export interface ConverterState {
+  files: FileItem[];
+  globalError?: string;
+  selectedFormat: OutputFormat;
+}
+
+/**
  * Props interface for DropZone component
  */
 export interface DropZoneProps {
-  onFileSelect: (file: File) => void;
+  onFileSelect: (files: File[]) => void;
   disabled: boolean;
-  status: Status;
+  status: Status; // Kept for general UI status if needed, or we might derive it
 }
 
 /**
