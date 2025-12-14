@@ -10,8 +10,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://localdrop.jaid.dev'),
-  title: 'LocalDrop | Secure, Free & Private HEIC to JPG Converter',
-  description: 'The fastest way to convert HEIC to JPG in your browser. No server uploads, offline capable, and 100% private. Convert for Free.',
+  title: {
+    default: 'LocalDrop | Free Online HEIC to JPG Converter - Secure & Fast',
+    template: '%s | LocalDrop'
+  },
+  description: 'Convert HEIC to JPG/PNG online for free. No file limits, no server uploads. Secure, private, and works offline in your browser.',
   openGraph: {
     title: 'LocalDrop | Secure, Free & Private HEIC to JPG Converter',
     description: 'The fastest way to convert HEIC to JPG in your browser. No server uploads, offline capable, and 100% private. Convert for Free.',
